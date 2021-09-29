@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Previsão AutoML</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+        <form class="form" id="formPrevisao" enctype="multipart/form-data">
+            <div class="card">
+              <div class="card-body">
+                <h1>Previsão AutoML</h1>
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <label for="csv_prever">Arquivo dados CSV</label>
+                            <input type="file" class="form-control" id="csv_prever" name="csv_prever">
+                        </div>
+                        <div class="form-group col-xs-6 col-sm-12 col-md-6 col-lg-6">
+                            <label for="classe">Model_id<br><small>(Opcional. Se deixar em branco, o padrão é o melhor modelo do processamento mais recente)</small></label>
+                            <input type="text" class="form-control" id="model_id" name="model_id">
+                        </div>
+                    </div>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary" onClick="classificar();" id="btnClassificar">Classificar</button>
+              </div>
+            </div>
+        </form>
+        <hr>
+        <div class="row" id="areaClassificacao" style="display: none;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h2>Resultado classificação:</h2>
+                <table class="table" id="tabelaClassificacao">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script language="JavaScript">
+        function classificar(){
+            //Deixar o botão em readonly e avisar o usuário do processamento
+            $('#btnClassificar').html('Aguarde, classificando...');
+            $('#btnClassificar').prop('disabled', true);
+
+            //Chamada na API para processamento dos modelos
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8000/api/prever',
+                data: new FormData(document.getElementById('formPrevisao')),
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                success: function (resposta) {
+                    let linhas = "<tr><td>predict</td><td>p0</td><td>p1</td></tr>";
+
+                    resposta.previsoes.forEach(function( item ) {
+                        linhas = linhas + "<tr><td>"+item.predict+"</td><td>"+item.p0+"</td><td>"+item.p1+"</td></tr>";
+                    });
+
+                    $('#tabelaClassificacao').html(linhas);
+
+                    $('#areaClassificacao').fadeIn();
+                    $('#btnClassificar').html('Classificar');
+                    $('#btnClassificar').prop('disabled', false);
+                },
+                error: function(resposta){
+                    alert('Não foi possível classificar o CSV. Erro:'+resposta.responseJSON.erro);
+                    $('#btnClassificar').html('Classificar');
+                    $('#btnClassiicar').prop('disabled', false);
+                }
+            });
+        }
+    </script>
+  </body>
+</html>

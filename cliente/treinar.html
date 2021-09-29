@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Treinamento AutoML</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+        <form class="form" id="formTreinamento" enctype="multipart/form-data">
+            <div class="card">
+              <div class="card-body">
+                <h1>Treinamento AutoML</h1>
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <label for="dados_csv">Arquivo dados CSV</label>
+                            <input type="file" class="form-control" id="dados_csv" name="dados_csv">
+                        </div>
+                        <div class="form-group col-xs-6 col-sm-12 col-md-6 col-lg-6">
+                            <label for="classe">Classe</label>
+                            <input type="text" class="form-control" id="classe" name="classe">
+                        </div>
+                        <div class="form-group col-xs-6 col-sm-12 col-md-6 col-lg-6">
+                            <label for="tempo_maximo">Tempo máximo para processamento</label>
+                            <input type="number" class="form-control" id="tempo_maximo" name="tempo_maximo">
+                        </div>
+                    </div>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary" onClick="treinar();" id="btnProcessar">Processar</button>
+              </div>
+            </div>
+        </form>
+        <hr>
+        <div class="row" id="areaProcessamento" style="display: none;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h2>Resultado processado:</h2>
+                <p>
+                    <strong>Id processamento:</strong>
+                    <span id="idProcessamento"></span>
+                    <strong>Total de modelos encontrados:</strong>
+                    <span id="totalModelosProcessados"></span>
+                </p>
+                <table class="table" id="tabelaModelosProcessados">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script language="JavaScript">
+        function treinar(){
+            //Deixar o botão em readonly e avisar o usuário do processamento
+            $('#btnProcessar').html('Aguarde, processando...');
+            $('#btnProcessar').prop('disabled', true);
+
+            //Chamada na API para processamento dos modelos
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8000/api/treinar-modelo',
+                data: new FormData(document.getElementById('formTreinamento')),
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                success: function (resposta) {
+                    $('#idProcessamento').html(resposta.id);
+                    $('#totalModelosProcessados').html(resposta.modelos_processados.length);
+
+                    let linhas = "<tr><td>model_id</td><td>auc</td><td>aucpr</td><td>logloss</td><td>mean_per_class_error</td><td>mse</td><td>rmse</td></tr>";
+
+                    resposta.modelos_processados.forEach(function( item ) {
+                        linhas = linhas + "<tr><td>"+item.model_id+"</td><td>"+item.auc+"</td><td>"+item.aucpr+"</td><td>"+item.logloss+"</td><td>"+item.mean_per_class_error+"</td><td>"+item.mse+"</td><td>"+item.rmse+"</td></tr>";
+                    });
+
+                    $('#tabelaModelosProcessados').html(linhas);
+
+                    $('#areaProcessamento').fadeIn();
+                    $('#btnProcessar').html('Processar');
+                    $('#btnProcessar').prop('disabled', false);
+                },
+                error: function(resposta){
+                    alert('Não foi possível treinar o modelo. Erro:'+resposta.responseJSON.erro);
+                    $('#btnProcessar').html('Processar');
+                    $('#btnProcessar').prop('disabled', false);
+                }
+            });
+        }
+    </script>
+  </body>
+</html>
