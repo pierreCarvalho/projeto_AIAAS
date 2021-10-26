@@ -1,16 +1,16 @@
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% load static %}
 
-    <title>Treinamento AutoML</title>
-  </head>
-  <body>
+{% block title %}
+	{% bootstrap_icon 'briefcase' %}
+{% endblock %}
+
+
+{% block content %}
+
+    <body>
     <div class="container mt-5">
         <form class="form" id="formTreinamento" enctype="multipart/form-data">
             <div class="card">
@@ -96,4 +96,8 @@
         }
     </script>
   </body>
-</html>
+
+
+{% endblock %}
+
+
