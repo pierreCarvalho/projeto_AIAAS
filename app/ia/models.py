@@ -13,9 +13,10 @@ from h2o.automl import H2OAutoML
 import pandas as pd
 
 #Modelo que representa a tabela no banco de dados para que o registro dos dados de processamento seja persistido
+# dados dos modelos que são criados
 class ModeloMachineLearningProcessado(models.Model):
     model_id = models.TextField('Identificador do modelo', null=True)
-    #conjunto de metricas
+    #conjunto de metricas de performance
     auc = models.DecimalField('aux', max_digits=10, decimal_places=6, null=True)
     logloss = models.DecimalField('logloss', max_digits=10, decimal_places=6, null=True)
     aucpr = models.DecimalField('aucpr', max_digits=10, decimal_places=6, null=True)
@@ -29,10 +30,10 @@ class ModeloMachineLearningProcessado(models.Model):
 #Modelo que representa a tabela no banco de dados para o processo
 class ProcessamentoModeloMachineLearning(models.Model):
     data = models.DateTimeField('Data e hora do processamento', auto_now_add=True)
-    dados_csv = models.FileField('Arquivo CSV', upload_to='arquivos_csv')
+    dados_csv = models.FileField('Arquivo CSV', upload_to='arquivos_csv') # sugestao de melhoria: aceitar outros formatos de arquivo xml,json,db
     #campo de resultado
-    classe = models.CharField('Classe', max_length=30)
-    variaveis_independentes = models.TextField('Variáveis independentes', null=True)
+    classe = models.CharField('Classe', max_length=30) # classe usuario informa
+    variaveis_independentes = models.TextField('Variáveis independentes', null=True) # programa define os campos que não são a classe
     tempo_maximo = models.PositiveIntegerField('Tempo máximo em segundos', 
                                                validators=[MinValueValidator(settings.TEMPO_MINIMO_PROCESSAMENTO), 
                                                            MaxValueValidator(settings.TEMPO_MAXIMO_PROCESSAMENTO)],)
@@ -68,7 +69,7 @@ class ProcessamentoModeloMachineLearning(models.Model):
 
         # Auto ML
         # Busca o modelo valor gravado no atributo tempo_maximo segundos, podemos em vez disso definir max_models
-        modelo_automl = H2OAutoML(max_runtime_secs=self.tempo_maximo, sort_metric='AUC')
+        modelo_automl = H2OAutoML(max_runtime_secs=self.tempo_maximo, sort_metric='AUC') # melhoria: informar metrica dinamicamente (pesquisar outras metricas)
         modelo_automl.train(y=self.classe, training_frame=treino)
 
         # Ranking dos melhores AutoML
@@ -77,14 +78,16 @@ class ProcessamentoModeloMachineLearning(models.Model):
 
         # Salva os resultados dos modelos rankeados associados ao processamento
         for i in range(0, len(ranking)-1):
-            modelo_processado = ModeloMachineLearningProcessado()
-            modelo_processado.model_id = ranking['model_id'].iloc[i]
-            modelo_processado.auc = ranking['auc'].iloc[i].astype(Decimal)
-            modelo_processado.logloss = ranking['logloss'].iloc[i].astype(Decimal)
-            modelo_processado.aucpr = ranking['aucpr'].iloc[i].astype(Decimal)
-            modelo_processado.mean_per_class_error = ranking['mean_per_class_error'].iloc[i].astype(Decimal)
-            modelo_processado.rmse = ranking['rmse'].iloc[i].astype(Decimal)
-            modelo_processado.mse = ranking['mse'].iloc[i].astype(Decimal)
+            
+            modelo_processado = ModeloMachineLearningProcessado.objects.create(
+                model_id=ranking['model_id'].iloc[i] ,
+                auc= ranking['auc'].iloc[i].astype(Decimal),
+                logloss= ranking['logloss'].iloc[i].astype(Decimal),
+                aucpr= ranking['aucpr'].iloc[i].astype(Decimal),
+                mean_per_class_error=ranking['mean_per_class_error'].iloc[i].astype(Decimal) ,
+                rmse=  ranking['rmse'].iloc[i].astype(Decimal),
+                mse= ranking['mse'].iloc[i].astype(Decimal),
+            )
             modelo = h2o.get_model(modelo_processado.model_id)
             modelo_processado.binario_modelo.name = h2o.save_model(modelo, path="%s/modelo" % settings.MEDIA_ROOT, force=True)
             modelo_processado.save()

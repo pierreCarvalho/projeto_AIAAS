@@ -13,6 +13,7 @@ class ModeloMachineLearningProcessadoSerializer(serializers.ModelSerializer):
 class ProcessamentoModeloMachineLearningCreateSerializer(serializers.ModelSerializer):
     modelos_processados = ModeloMachineLearningProcessadoSerializer(many=True, read_only=True)
 
+    #melhoria: reescer o create e validar campos
     class Meta:
         model = ProcessamentoModeloMachineLearning
         #dados do processamento

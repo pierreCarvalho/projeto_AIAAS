@@ -4,9 +4,14 @@ import pandas as pd
 
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from .models import ProcessamentoModeloMachineLearning, ModeloMachineLearningProcessado
 from .serializers import ProcessamentoModeloMachineLearningCreateSerializer, PrevisaoSerializer
+
+from rest_framework.permissions import IsAuthenticated
+
 
 #Herda CreateAPIView de rest_framework que está em generics
 class ProcessamentoModeloMachineLearningView(generics.CreateAPIView):
@@ -20,6 +25,7 @@ class ProcessamentoModeloMachineLearningView(generics.CreateAPIView):
         #no nosso caso além de gravar os dados precisamos processar - treinar o modelo
         # gera dados do modelos processados
         q.processar()
+
 
 
 class PrevisaoView(generics.views.APIView):
@@ -71,3 +77,27 @@ class PrevisaoView(generics.views.APIView):
             return Response(status=201, data={'previsoes': previsoes})
         except Exception as e:
             return Response(status=401, data={'Erro': str(e)})
+class PreverViewSet(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'prever.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        
+        return Response({})
+
+class TreinarViewSet(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'treinar.html'
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        
+        return Response({})
+    
+class AboutViewSet(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'login.html'
+
+    def get(self, request):
+        
+        return Response({})

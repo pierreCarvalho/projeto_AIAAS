@@ -5,5 +5,10 @@ from . import views
 
 urlpatterns = [
     path('treinar-modelo', views.ProcessamentoModeloMachineLearningView.as_view(), name='treinar_modelo'),
-    path('prever', views.PrevisaoView.as_view(), name='prever')
+    path('prever', views.PrevisaoView.as_view(), name='prever'),
+    path('prever-form', views.PreverViewSet.as_view(), name='prever-form'),
+    path('treinar-modelo-form', views.TreinarViewSet.as_view(), name='treinar-modelo-form'),
+    path('about', views.AboutViewSet.as_view(), name='about'),
+    
+    
 ]
