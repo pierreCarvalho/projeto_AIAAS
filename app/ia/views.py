@@ -106,13 +106,7 @@ class PreverViewSet(APIView):
         return Response({})
 
 
-class HomeViewSet(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "home.html"
-    # permission_classes = [IsAuthenticated]
-    def get(self, request):
 
-        return Response({})
 
 
 class TreinarViewSet(APIView):
@@ -123,11 +117,3 @@ class TreinarViewSet(APIView):
 
         return Response({})
 
-
-class AboutViewSet(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "login.html"
-
-    def get(self, request):
-
-        return Response({})

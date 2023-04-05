@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+	{% bootstrap_icon 'Usuario' %}
+{% endblock %}
+{% block content %}
+
+<h1>Usuario - {{ profile.name }}</h1>
+
+<form action="{% url 'profile-detail' pk=profile.pk %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <input type="submit" value="Save">
+</form>
+
+{% endblock %}

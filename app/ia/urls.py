@@ -16,6 +16,5 @@ urlpatterns = [
         views.TreinarViewSet.as_view(),
         name="treinar-modelo-form",
     ),
-    path("about", views.AboutViewSet.as_view(), name="about"),
-    path("home", views.HomeViewSet.as_view(), name="home"),
+    
 ]

@@ -1,0 +1,42 @@
+
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+	{% bootstrap_icon 'home' %}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="panel panel-default">
+	  <div class="panel-body">
+	    <a href="" class="btn btn-md btn-primary">{% bootstrap_icon 'floppy-disk' %} Criar usuario</a>
+	  </div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-hover">
+	  		<thead>
+	  			<th>Nome</th>
+	  			<th class="text-center">Editar</th>
+				<th class="text-center">Corrigir</th>
+	  			<th class="text-center">Excluir</th>
+	  		</thead>
+	  		<tbody>
+	  			{% for usuario in usuarios %}
+					<tr>
+						<td>
+							{% if usuario.first_name %}
+								{{usuario.first_name }} {{usuario.last_name}} 
+							{% endif %}
+						</td>
+
+					</tr>
+				{% endfor %}
+	  		</tbody>
+		</table>
+	</div>
+
+
+{% endblock %}
