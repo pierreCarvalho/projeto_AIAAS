@@ -11,16 +11,11 @@
 {% block content %}
 <html><body>
 
-<h1>Profile - {{ usuario.first_name }}</h1>
-
-<form action="{% url 'usuario_update' id=usuario.id %}" method="POST">
+<form action="{% url 'usuario_create' %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-
     <input type="submit" value="Save">
     <a href="javascript:history.go(-1);" class="btn btn-info" role="button">Voltar</a>
-
 </form>
-
 </body></html>
 {% endblock %}

@@ -12,7 +12,7 @@
 
     <div class="panel panel-default">
 	  <div class="panel-body">
-	    <a href="" class="btn btn-md btn-primary">{% bootstrap_icon 'floppy-disk' %} Criar usuario</a>
+	    <a href="{% url 'usuario_create' %}" class="btn btn-md btn-primary">{% bootstrap_icon 'floppy-disk' %} Criar usuario</a>
 	  </div>
 	</div>
 	<div class="table-responsive">
@@ -20,7 +20,6 @@
 	  		<thead>
 	  			<th>Nome</th>
 	  			<th class="text-center">Editar</th>
-				<th class="text-center">Corrigir</th>
 	  			<th class="text-center">Excluir</th>
 	  		</thead>
 	  		<tbody>
@@ -31,6 +30,13 @@
 								{{usuario.first_name }} {{usuario.last_name}} 
 							{% endif %}
 						</td>
+						<td class="text-center">
+				          {% bootstrap_button content='' href=usuario.get_absolute_url  button_type='link' icon='edit' button_class='btn btn-primary' size='sm' %}
+						</td>
+						<td class="text-center">
+							{% bootstrap_button content='' href=usuario.get_delete_url  button_type='link'  icon='trash' button_class='btn btn-danger' size='sm' %}
+						</td>
+
 
 					</tr>
 				{% endfor %}

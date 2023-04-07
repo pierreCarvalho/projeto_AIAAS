@@ -19,19 +19,44 @@ class UsuarioList(APIView):
         return Response({"usuarios": queryset})
 
 
-class ProfileDetail(APIView):
+class UsuarioCreate(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = "profile_detail.html"
+    template_name = "usuario_create.html"
 
-    def get(self, request, pk):
-        usuario = get_object_or_404(Usuario, pk=pk)
+    def get(self, request):
+        serializer = UsuarioSerializer()
+        return Response({"serializer": serializer})
+
+    def post(self, request, id):
+        # usuario = get_object_or_404(Usuario, pk=id)
+        serializer = UsuarioSerializer(data=request.data)
+        if not serializer.is_valid():
+            usuario = serializer.save()
+            return Response({"serializer": serializer, "usuario": usuario})
+        serializer.save()
+        return redirect("usuario_list")
+
+
+class UsuarioDetail(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "usuario_detail.html"
+
+    def get(self, request, id):
+        usuario = get_object_or_404(Usuario, pk=id)
         serializer = UsuarioSerializer(usuario)
         return Response({"serializer": serializer, "usuario": usuario})
 
-    def post(self, request, pk):
-        usuario = get_object_or_404(Usuario, pk=pk)
+    def post(self, request, id):
+        usuario = get_object_or_404(Usuario, pk=id)
         serializer = UsuarioSerializer(usuario, data=request.data)
         if not serializer.is_valid():
             return Response({"serializer": serializer, "usuario": usuario})
         serializer.save()
-        return redirect("usuario-list")
+        return redirect("usuario_list")
+
+
+class UsuarioDelete(APIView):
+    def get(self, request, id):
+        usuario = get_object_or_404(Usuario, pk=id)
+        usuario.delete()
+        return redirect("usuario_list")

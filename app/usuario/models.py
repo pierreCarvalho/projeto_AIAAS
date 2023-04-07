@@ -77,13 +77,13 @@ class Usuario(User):
         except:
             return None
 
-    # @property
-    # def get_absolute_url(self):
-    #     return reverse("usuario_update", args=[str(self.id)])
+    @property
+    def get_absolute_url(self):
+        return reverse("usuario_update", args=[str(self.id)])
 
-    # @property
-    # def get_delete_url(self):
-    #     return reverse("usuario_delete", args=[str(self.id)])
+    @property
+    def get_delete_url(self):
+        return reverse("usuario_delete", args=[str(self.id)])
 
     # @property
     # def get_usuario_register_activate_url(self):
